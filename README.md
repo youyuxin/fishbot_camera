@@ -1,84 +1,73 @@
-调整接口：
+**配置文档**
 
-LED的亮度，0-255
-http://172.20.10.12/control?var=led_intensity&val=0
+---
 
-图像质量： 4-63
-http://172.20.10.12/control?var=quality&val=37
+**一、LED亮度调整**
 
-水平镜像：
-http://172.20.10.12/control?var=hmirror&val=0
+LED的亮度可调整，亮度值范围在0-255之间。
 
-上下反转：
-http://172.20.10.12/control?var=vflip&val=1
+---
 
-人脸检测：
-http://172.20.10.12/control?var=face_detect&val=1
+**二、图像质量调整**
 
-图像大小：
-http://172.20.10.12/control?var=framesize&val=4
+图像质量可调整，质量值范围在4-63之间。
 
-{  
-  "framesize": [  
-    {  
-      "label": "UXGA(1600x1200)",  
-      "value": 13  
-    },  
-    {  
-      "label": "SXGA(1280x1024)",  
-      "value": 12  
-    },  
-    {  
-      "label": "HD(1280x720)",  
-      "value": 11  
-    },  
-    {  
-      "label": "XGA(1024x768)",  
-      "value": 10  
-    },  
-    {  
-      "label": "SVGA(800x600)",  
-      "value": 9  
-    },  
-    {  
-      "label": "VGA(640x480)",  
-      "value": 8  
-    },  
-    {  
-      "label": "HVGA(480x320)",  
-      "value": 7  
-    },  
-    {  
-      "label": "CIF(400x296)",  
-      "value": 6  
-    },  
-    {  
-      "label": "QVGA(320x240)",  
-      "value": 5  
-    },  
-    {  
-      "label": "240x240",  
-      "value": 4  
-    },  
-    {  
-      "label": "HQVGA(240x176)",  
-      "value": 3  
-    },  
-    {  
-      "label": "QCIF(176x144)",  
-      "value": 2  
-    },  
-    {  
-      "label": "QQVGA(160x120)",  
-      "value": 1  
-    },  
-    {  
-      "label": "96x96",  
-      "value": 0  
-    }  
-  ]  
-}
+---
+
+**三、水平镜像**
+
+水平镜像功能可开启或关闭。
+
+- val=0：关闭水平镜像
+- val=1：开启水平镜像
+
+---
+
+**四、上下反转**
+
+上下反转功能可开启或关闭。
+
+- val=0：关闭上下反转
+- val=1：开启上下反转
 
 
-特殊效果：
-http://172.20.10.12/control?var=special_effect&val=1
+---
+
+**五、人脸检测**
+
+人脸检测功能可开启或关闭。
+
+- val=0：关闭人脸检测
+- val=1：开启人脸检测
+
+---
+
+**六、图像大小调整**
+
+图像大小可调整，具体大小选项见下表。
+
+**图像大小选项**
+
+| Label | Value |
+| --- | --- |
+| UXGA(1600x1200) | 13 |
+| SXGA(1280x1024) | 12 |
+| HD(1280x720) | 11 |
+| XGA(1024x768) | 10 |
+| SVGA(800x600) | 9 |
+| VGA(640x480) | 8 |
+| HVGA(480x320) | 7 |
+| CIF(400x296) | 6 |
+| QVGA(320x240) | 5 |
+| 240x240 | 4 |
+| HQVGA(240x176) | 3 |
+| QCIF(176x144) | 2 |
+| QQVGA(160x120) | 1 |
+| 96x96 | 0 |
+
+
+---
+
+**七、特殊效果**
+
+特殊效果可设置，效果自行设置对比。

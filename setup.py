@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'camera_driver=fishbot_camera.camera_driver:main'
         ],
     },
 )
