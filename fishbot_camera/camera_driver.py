@@ -49,7 +49,7 @@ class CameraDriver(Node):
                 with urllib.request.urlopen(url) as response:  
                     return response.read().decode('utf-8')  # 读取并解码响应内容  
             except urllib.error.URLError as e:  
-                print(f"发生错误：{e.reason}")  
+                self.get_logger().error(f"发生错误：{e}")  
                 return None  
             time.sleep(0.1)
 
@@ -82,9 +82,10 @@ class CameraDriver(Node):
             data, addr = self.udp_socket.recvfrom(1024)
             # print(f"Received message from {addr}: {data.decode('utf-8')}")
             if time.time()-self.last_recv_img_time>=30.0:
+                self.last_recv_img_time = time.time()
                 self.camera_ip = addr[0]
                 self.url = f'http://{self.camera_ip}:81/stream'
-                print(f"start read image thread {self.url}")
+                self.get_logger().info(f"start read image thread {self.url}")
                 # syc param 
                 self.sync_all_param()
                 self.thread_readimg = threading.Thread(target=self.stream_image)

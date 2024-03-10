@@ -1,3 +1,27 @@
+# FishBot CAM驱动
+
+下载：
+
+```
+mkdir -p ~/fishbot_ws/src/ && cd ~/fishbot_ws/src/
+git clone https://github.com/fishros/fishbot_camera.git
+```
+
+构建：
+
+```
+cd ~/fishbot_ws/
+colcon build
+```
+
+运行:
+
+```
+source ~/fishbot_ws/install/setup.bash
+ros2 run fishbot_camera camera_driver
+```
+
+
 **配置文档**
 
 ---
