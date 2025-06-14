@@ -15,7 +15,7 @@ import socket
 
 class CameraDriver(Node):
     def __init__(self):
-        super().__init__('fishbot_camera')
+        super().__init__('fishbot_camera') # node 节点初始化命名
         self.publisher_ = self.create_publisher(Image, 'fishbot_camera_raw', 10)
         self.cv_bridge = CvBridge()
         self.last_recv_img_time = 0
@@ -33,7 +33,24 @@ class CameraDriver(Node):
         self.declare_param_with_range('special_effect', 0 ,0,6)
         self.thread_wait_connect = threading.Thread(target=self.wait_connect)
         self.thread_wait_connect.start()
+        #self.print_p()
+        self.print_param()
+        #add_on_set_parameters_callback 是NOde 类方法, 每当为节点设置参数时调用的函数 parameter_callback
         self.add_on_set_parameters_callback(self.parameter_callback)
+
+    # add by yyx for test in 20250608
+    def print_param(self):
+        parameters=self._parameters.keys()
+        if not parameters:
+            self.get_logger().info(f'param is null,类型 为{parameters}')
+        for key in parameters:
+            self.get_logger().info(f'参数名为{self._parameters[key].name},数值为：{self._parameters[key].value}')
+    
+    # add by yyx for test in 20250608
+    def print_p(self):
+        self.get_logger().info(f'{self._parameters["quality"],dir(self._parameters["quality"])}')
+
+
 
     def parameter_callback(self, parameters):
         for parameter in parameters:
@@ -53,6 +70,7 @@ class CameraDriver(Node):
                 return None  
             time.sleep(0.1)
 
+    #声明参数范围  
     def declare_param_with_range(self,name,value,start,end):
         pd = ParameterDescriptor()
         pd_range = IntegerRange()
@@ -62,6 +80,7 @@ class CameraDriver(Node):
         pd.integer_range.append(pd_range)
         self.declare_parameter(name,value,pd) 
     
+    #向camera 同步所有设置的参数，可以理解为与camera 连接后，初始化camera的参数
     def sync_all_param(self):
         self.sync_param('led_intensity',self.get_parameter('led_intensity').value)
         self.sync_param('quality',self.get_parameter('quality').value)
@@ -70,10 +89,11 @@ class CameraDriver(Node):
         self.sync_param('vflip',self.get_parameter('vflip').value)
         self.sync_param('face_detect',self.get_parameter('face_detect').value)
         self.sync_param('special_effect',self.get_parameter('special_effect').value)
-        
+        self.get_logger().info(f"sync_all_param start")
 
     def wait_connect(self):
         self.udp_port = 8887
+        #创建UDP 套接字 AF_INET(IPV4)+SOCK_DGRAM(UDP) AF_INET6：IPV6，SOCK_STREAM：TCP
         self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udp_socket.bind(('', self.udp_port))
 
@@ -88,6 +108,7 @@ class CameraDriver(Node):
                 self.get_logger().info(f"start read image thread {self.url}")
                 # syc param 
                 self.sync_all_param()
+                #启动图像数据流，进行图像传输
                 self.thread_readimg = threading.Thread(target=self.stream_image)
                 self.thread_readimg.start()
                 self.rate = 1
@@ -99,19 +120,33 @@ class CameraDriver(Node):
         self.last_time = time.time()
         self.last_recv_img_time = time.time()
         while rclpy.ok():
+            # 读取图像数据流
+            # 1种.如果一帧的数据超过128字节，则需要通过+进行数据连接，才能读取到图像数据的结束标志位
+            # 2种.如果一帧的数据小于128字节，通过+的方式会混入下一帧图像的开始标志位
             self.stream_bytes += self.stream.read(128)
+            #查找 JPEG 图像的开始和结束标志位
+            # JPEG 图像的开始标志位为 b'\xff\xd8'，结束标志位为 b'\xff\xd9
             first = self.stream_bytes.find(b'\xff\xd8')
             last = self.stream_bytes.find(b'\xff\xd9')
             if first != -1 and last != -1:
                 if last < first:
+                    #如果结束标志在起始标志前，说明数据有问题，丢弃前面的数据
                     self.stream_bytes = self.stream_bytes[last + 2:]
                 else:
+                    # 提取完整的JPEG图像数据
                     jpg = self.stream_bytes[first:last + 2]
+                    # 更新缓存，去掉已处理的数据(去掉已经读取的图像数据)
+                    # 注意：如果数据流中有多帧图像，可能会出现多帧图像的情况
+                    # 如前面所说的第二种情况，可能会混入下一帧图像的开始标志位
                     self.stream_bytes = self.stream_bytes[last + 2:]
+                    # 将JPEG字节流转为numpy数组
                     nimage = np.frombuffer(jpg, dtype=np.uint8)
+                    # 解码JPEG图像
+                    # cv2.imdecode() 函数将JPEG字节流解码为OpenCV图像格式
                     image = cv2.imdecode(nimage, cv2.IMREAD_COLOR)
                     self.count += 1
                     self.last_recv_img_time = time.time()
+                    # 每2秒统计一次平均帧率
                     if int(time.time() - self.last_time) >= 2:
                         self.rate = self.count / (time.time() - self.last_time)
                         self.get_logger().info("平均帧率 %s" % str(self.rate))
