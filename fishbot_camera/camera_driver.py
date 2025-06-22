@@ -23,12 +23,12 @@ class CameraDriver(Node):
         # 声明参数
         # 图像质量
         self.declare_param_with_range('quality', 10 ,4,64)
-        # 图像大小
-        self.declare_param_with_range('framesize', 5 ,0,13)
+        # 图像大小 12比较清晰
+        self.declare_param_with_range('framesize', 12 ,0,13)
         # LED亮度
         self.declare_param_with_range('led_intensity', 0 ,0,255)
-        self.declare_param_with_range('hmirror', 0 ,0,1)
-        self.declare_param_with_range('vflip', 0 ,0,1)
+        self.declare_param_with_range('hmirror', 1 ,0,1) #1 水平镜像，0 不镜像
+        self.declare_param_with_range('vflip', 1 ,0,1)#1 垂直镜像，0 不镜像
         self.declare_param_with_range('face_detect', 0 ,0,1)
         self.declare_param_with_range('special_effect', 0 ,0,6)
         self.thread_wait_connect = threading.Thread(target=self.wait_connect)
